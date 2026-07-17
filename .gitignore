@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+*.db
+.pytest_cache/
+.vscode/
+learning_orchestrator_mcp.egg-info/
