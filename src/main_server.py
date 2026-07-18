@@ -6,7 +6,7 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import json
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone, timedelta
 from mcp.server.fastmcp import FastMCP
 from src.platform_connector import generate_sync_token, verify_platform_handshake
 
@@ -108,7 +108,6 @@ def calculate_spaced_repetition(grade_1_5: int, repetition_count: int, previous_
     next_ease_factor = ease_factor + (0.1 - (5 - grade) * (0.08 + (5 - grade) * 0.02))
     next_interval_days = max(1, next_interval)
     
-    # Calculate timezone-aware next review date to prevent deprecation warnings
     next_review_date = (datetime.now(timezone.utc) + timedelta(days=next_interval_days)).isoformat().replace("+00:00", "Z")
     
     return json.dumps({
@@ -122,14 +121,10 @@ def calculate_spaced_repetition(grade_1_5: int, repetition_count: int, previous_
 
 @mcp.tool()
 def sync_ai_platform_state(student_id: str, current_level: int, interval_days: int, platform_token: str = "") -> str:
-    """
-    AI Platform Connector: Verifies and synchronizes student progress with 
-    external educational platforms and LMS, generating secure cryptographic handshakes.
-    """
+    """AI Platform Connector: Verifies and synchronizes student progress with external platforms."""
     clean_id = student_id.strip()
     
     if platform_token:
-        # Verify incoming session state from external AI platform
         is_valid = verify_platform_handshake(clean_id, platform_token, current_level, interval_days)
         if not is_valid:
             return json.dumps({
@@ -139,9 +134,7 @@ def sync_ai_platform_state(student_id: str, current_level: int, interval_days: i
             })
         print(f"[Connector] Verified secure handshake for student: {clean_id}")
         
-    # Generate new session token for the next transaction
     new_token = generate_sync_token(clean_id, current_level, interval_days)
-    
     return json.dumps({
         "status": "CONNECTION_ESTABLISHED",
         "student_id": clean_id,
@@ -149,6 +142,23 @@ def sync_ai_platform_state(student_id: str, current_level: int, interval_days: i
         "synchronized_interval": interval_days,
         "next_sync_token": new_token
     })
+
+@mcp.tool()
+def sync_lms_onboarding_state(lms_student_id: str, scorm_package_id: str, quiz_score_pct: float, repetition_count: int, previous_ease_factor: float, previous_interval_days: int) -> str:
+    """
+    LMS Sync Bridge: Integrates with Moodle/Canvas LTI services. Parses raw 
+    SCORM quiz scores, executes SM-2 scheduling, and outputs a signed LTI payload.
+    """
+    from src.lms_integrator import sync_lms_scorm_activity
+    res = sync_lms_scorm_activity(
+        lms_student_id=lms_student_id,
+        scorm_package_id=scorm_package_id,
+        quiz_score_pct=quiz_score_pct,
+        repetition_count=repetition_count,
+        previous_ease_factor=previous_ease_factor,
+        previous_interval_days=previous_interval_days
+    )
+    return json.dumps(res)
 
 if __name__ == "__main__":
     import time
