@@ -37,7 +37,7 @@ def test_lms_scorm_lti_sync():
         lms_student_id="moodle_student_88",
         scorm_package_id="scorm_compliance_01",
         quiz_score_pct=95.0,
-        repetition_count=3,            # CHANGE THIS FROM 2 TO 3 to trigger the multiplication block (6 * 2.5 = 15)
+        repetition_count=3,
         previous_ease_factor=2.5,
         previous_interval_days=6
     )
