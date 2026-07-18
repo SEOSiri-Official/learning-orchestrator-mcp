@@ -1,6 +1,6 @@
 # learning-orchestrator-mcp
 
-[![learning-orchestrator-mcp MCP server](https://glama.ai/mcp/servers/SEOSiri-Official/learning-orchestrator-mcp/badges/card.svg)](https://glama.ai/mcp/servers/SEOSiri-Official/learning-orchestrator-mcp)
+[![learning-orchestrator-mcp MCP server](https://glama.ai/mcp/servers/SEOSiri-Official/learning-orchestrator-mcp/badges/card.svg?v=2)](https://glama.ai/mcp/servers/SEOSiri-Official/learning-orchestrator-mcp)
 
 An open-source, stateless, and high-performance Model Context Protocol (MCP) server designed to orchestrate progressive curriculum learning, track skills development using cognitive spacing, and securely interface with external AI educational platforms and LMS networks.
 
